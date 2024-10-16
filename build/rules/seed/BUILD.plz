@@ -1,7 +1,0 @@
-filegroup(
-    name = "defs",
-    srcs = [
-        "seed.build_defs",
-    ],
-    visibility = ["PUBLIC"],
-)

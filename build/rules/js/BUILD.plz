@@ -1,7 +1,0 @@
-filegroup(
-    name = "defs",
-    srcs = [
-        "js.build_defs",
-    ],
-    visibility = ["PUBLIC"],
-)
