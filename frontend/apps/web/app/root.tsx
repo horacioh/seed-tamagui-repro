@@ -1,31 +1,26 @@
-import {LinksFunction} from "@remix-run/node";
-import {
-  isRouteErrorResponse,
-  Links,
-  Meta,
-  Outlet,
-  Scripts,
-  ScrollRestoration,
-  useRouteError,
-} from "@remix-run/react";
-import {captureRemixErrorBoundaryError, withSentry} from "@sentry/remix";
-import {isClient} from "@tamagui/core";
-import {XStack, YStack} from "@tamagui/stacks";
-import {SizableText} from "@tamagui/text";
-import Tamagui from "../tamagui.config";
-import {Providers, ThemeProvider} from "./providers";
-import globalStyles from "./styles.css?url";
-import globalTamaguiStyles from "./tamagui.css?url";
-import {Container} from "./ui/container";
+import { Links, Meta, Outlet, Scripts, ScrollRestoration } from '@remix-run/react'
+import type { LinksFunction } from '@remix-run/node'
+import { TamaguiProvider } from '@tamagui/web'
+import tamaguiConfig from '../tamagui.config.js'
 
-export const links: LinksFunction = () => {
-  return [
-    {rel: "stylesheet", href: globalStyles},
-    {rel: "stylesheet", href: globalTamaguiStyles},
-  ];
-};
+import '@tamagui/core/reset.css'
+import './tamagui.css'
 
-export function Layout({children}: {children: React.ReactNode}) {
+export const links: LinksFunction = () => [
+  { rel: 'preconnect', href: 'https://fonts.googleapis.com' },
+  {
+    rel: 'preconnect',
+    href: 'https://fonts.gstatic.com',
+    crossOrigin: 'anonymous',
+  },
+  {
+    rel: 'stylesheet',
+    href: 'https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap',
+  },
+]
+
+export function Layout({ children }: { children: React.ReactNode }) {
+  
   return (
     <html lang="en">
       <head>
@@ -33,93 +28,18 @@ export function Layout({children}: {children: React.ReactNode}) {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <Meta />
         <Links />
-        <Styles />
       </head>
       <body>
-        <Providers>{children}</Providers>
+        <TamaguiProvider config={tamaguiConfig} defaultTheme="dark">
+          {children}
+        </TamaguiProvider>
         <ScrollRestoration />
         <Scripts />
       </body>
     </html>
-  );
+  )
 }
 
-export function ErrorBoundary({}: {}) {
-  const error = useRouteError();
-
-  let errorMessage = "Unknown Error";
-  if (isRouteErrorResponse(error)) {
-    errorMessage = error.data.message;
-  } else if (error instanceof Error) {
-    errorMessage = error.message;
-  }
-
-  captureRemixErrorBoundaryError(error);
-
-  return (
-    <html>
-      <head>
-        <title>Oops! Something went wrong</title>
-      </head>
-      <body>
-        <ThemeProvider>
-          <YStack>
-            <Container>
-              <YStack
-                alignSelf="center"
-                width={600}
-                gap="$5"
-                borderWidth={1}
-                borderColor="$color8"
-                borderRadius="$4"
-                padding="$5"
-                elevation="$4"
-              >
-                <XStack alignItems="center" gap="$3">
-                  <SizableText size="$10">🤕</SizableText>
-                  <SizableText size="$8" fontWeight="bold">
-                    Oh oh, it's not you, it's us...
-                  </SizableText>
-                </XStack>
-                <YStack gap="$3">
-                  <SizableText>
-                    Looks like something didn’t go as planned on our end. Don’t
-                    worry, it’s not your fault!
-                  </SizableText>
-                  <SizableText>
-                    Give it a quick refresh or come back in a bit, and we’ll
-                    have things sorted. If it keeps happening, just reach out to
-                    support and we’ll make it right in no time!
-                  </SizableText>
-                </YStack>
-              </YStack>
-            </Container>
-          </YStack>
-        </ThemeProvider>
-        <Scripts />
-      </body>
-    </html>
-  );
+export default function App() {
+  return <Outlet />
 }
-
-function App() {
-  return <Outlet />;
-}
-
-export default withSentry(App);
-
-export const Styles = () => {
-  if (isClient) {
-    return null;
-  }
-  return (
-    <style
-      dangerouslySetInnerHTML={{
-        __html: Tamagui.getCSS({
-          // design system generated into tamagui.css
-          exclude: "design-system",
-        }),
-      }}
-    />
-  );
-};

@@ -1,31 +1,21 @@
-## Dev
+# Welcome to Remix + Tamagui!
 
-To run the dev site service:
+📖 See the [Remix docs](https://remix.run/docs) and the [Remix Vite docs](https://remix.run/docs/en/main/future/vite) for details on supported features.
 
-```
-yarn dev
-```
+Note: Using `react-native` seems to cause issues with Remix. With plain Vite
+we've had this working for some time, but it seems Remix has some custom
+configuration that needs dealing with on the server side.
 
-To run the site daemon:
+## Development
 
-```
-SEED_P2P_TESTNET_NAME="dev" go run ./backend/cmd/seed-daemon -data-dir="$HOME/.seed-site" -p2p.port=59000  -grpc.port=59002 -http.port=59001
-```
+Run the Vite dev server:
 
-set `config.json` to:
-
-```
-{"availableRegistrationSecret": "abc"}
+```sh
+npm run dev
 ```
 
-then go into the app and publish your account with this URL:
+## Produciton
 
-```
-http://localhost:5175/hm/register?secret=abc
-```
-
-For web deployment in production
-
-```
-sh <(curl -sL https://raw.githubusercontent.com/seed-hypermedia/seed/main/website_deployment.sh) https://seed.verse.link --tag main --auto-update
+```sh
+npm run build:production
 ```

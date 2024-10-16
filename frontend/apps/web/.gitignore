@@ -3,7 +3,4 @@ node_modules
 /.cache
 /build
 .env
-
-.wrangler
-
-config.json
+.tamagui

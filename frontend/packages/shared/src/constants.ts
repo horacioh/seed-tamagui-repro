@@ -69,7 +69,3 @@ export const DAEMON_GRAPHQL_ENDPOINT = `${DAEMON_HOSTNAME}:${DAEMON_HTTP_PORT}/g
 export const LIGHTNING_API_URL = IS_PROD_DESKTOP
   ? 'https://ln.mintter.com'
   : 'https://ln.testnet.mintter.com'
-
-export const VITE_DESKTOP_SENTRY_DSN =
-  (import.meta.env && import.meta.env.VITE_DESKTOP_SENTRY_DSN) ||
-  process.env.VITE_DESKTOP_SENTRY_DSN

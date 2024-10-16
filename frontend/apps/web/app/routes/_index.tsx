@@ -1,45 +1,172 @@
-import {useLoaderData} from "@remix-run/react";
-import {hmId} from "@shm/shared";
-import {Button} from "@tamagui/button";
-import {getConfig} from "~/config";
-import {DocumentPage, documentPageMeta} from "~/document";
-import {loadSiteDocument, SiteDocumentPayload} from "~/loaders";
-import {defaultPageMeta} from "~/meta";
-import {NotRegisteredPage} from "~/not-registered";
-import {unwrap, wrapJSON, Wrapped} from "~/wrapping";
+import type {MetaFunction} from "@remix-run/node";
+import {useHover} from "@shm/shared";
+import {styled, Text, View} from "@tamagui/core";
+import {useState} from "react";
 
-// Remove this if you want the error:
-Button;
-// seriously, wtf
-
-const unregisteredMeta = defaultPageMeta("Welcome to Seed Hypermedia");
-
-export const meta = ({
-  data,
-}: {
-  data: Wrapped<SiteDocumentPayload | "unregistered">;
-}) => {
-  const payload = unwrap<SiteDocumentPayload | "unregistered">(data);
-  if (payload === "unregistered") return unregisteredMeta();
-  return documentPageMeta({data});
+export const meta: MetaFunction = () => {
+  return [
+    {title: "Tamagui with Remix"},
+    {
+      name: "description",
+      content: "A demo showcasing Tamagui working with Remix.",
+    },
+  ];
 };
 
-export const loader = async ({request}: {request: Request}) => {
-  const url = new URL(request.url);
-  const version = url.searchParams.get("v");
-  const waitForSync = url.searchParams.get("waitForSync") !== null;
-  const {registeredAccountUid} = getConfig();
-  if (!registeredAccountUid) return wrapJSON("unregistered");
-  return await loadSiteDocument(
-    hmId("d", registeredAccountUid, {version, path: []}),
-    waitForSync
+const Section = styled(View, {
+  tag: "section",
+  gap: "$6",
+  padding: "$5",
+  $gtSm: {
+    padding: "$large",
+    maxWidth: 600,
+  },
+  $gtMd: {
+    padding: "$extraLarge",
+  },
+});
+
+const ButtonOuter = styled(View, {
+  tag: "button",
+  themeInverse: true,
+  backgroundColor: "$background",
+  borderRadius: "$4",
+  cursor: "pointer",
+  padding: "$4",
+  maxWidth: "fit-content",
+  display: "unset",
+  pressStyle: {
+    opacity: 0.8,
+  },
+  hoverStyle: {
+    opacity: 0.9,
+  },
+});
+
+const ButtonText = styled(Text, {
+  fontWeight: "bold",
+  textAlign: "center",
+  tag: "span",
+});
+
+export default function Index() {
+  const hover = useHover();
+  const [theme, setTheme] = useState("light");
+  const toggleTheme = () => {
+    setTheme(theme === "light" ? "dark" : "light");
+  };
+  return (
+    <View
+      theme={theme}
+      flexDirection="column"
+      gap={16}
+      backgroundColor="$background"
+      minHeight="100vh"
+    >
+      <View
+        tag="header"
+        padding="$4"
+        borderBottomWidth={1}
+        borderBottomColor="$borderColor"
+      >
+        <Text
+          tag="h1"
+          fontSize={24}
+          $gtMd={{
+            fontSize: 32,
+          }}
+        >
+          SEED Hello Remix + Tamagui!!
+        </Text>
+      </View>
+      <Section>
+        <Text
+          tag="h2"
+          fontSize={24}
+          $gtMd={{
+            fontSize: 32,
+          }}
+        >
+          Introduction
+        </Text>
+        <Text>
+          This is a demo page to showcase how Tamagui works seamlessly with
+          Remix.
+        </Text>
+      </Section>
+      <Section>
+        <Text
+          tag="h2"
+          fontSize={24}
+          $gtMd={{
+            fontSize: 32,
+          }}
+        >
+          Features
+        </Text>
+        <Text>
+          Tamagui provides a powerful and flexible way to style your React
+          components. With Tamagui, you can leverage themes to create a
+          consistent look and feel across your application. Theming in Tamagui
+          is highly customizable, allowing you to define colors, spacing,
+          typography, and more. You can easily switch between light and dark
+          themes, or create your own custom themes to match your brand.
+        </Text>
+      </Section>
+      <Section>
+        <Text
+          tag="h2"
+          fontSize={24}
+          $gtMd={{
+            fontSize: 32,
+          }}
+        >
+          Works with themes
+        </Text>
+        <Text>
+          Tamagui&apos;s styling system is designed to work with Remix out of
+          the box. Server-render initial styles and themes.
+        </Text>
+        <ButtonOuter onPress={toggleTheme}>
+          <ButtonText>Toggle Theme</ButtonText>
+        </ButtonOuter>
+      </Section>
+      <Section>
+        <Text
+          tag="h2"
+          fontSize={24}
+          $gtMd={{
+            fontSize: 32,
+          }}
+        >
+          Go Native
+        </Text>
+        <Text>
+          One of the standout features of Tamagui is its ability to seamlessly
+          port your components to React Native. This means you can write your
+          components once and run them on both web and mobile platforms.
+          Tamagui&apos;s styling system is designed to work with React Native
+          out of the box, so you can take advantage of native performance and
+          capabilities without having to rewrite your components.
+        </Text>
+      </Section>
+      <View
+        tag="footer"
+        padding="$large"
+        justifyContent="center"
+        marginTop="auto"
+        paddingTop={100}
+      >
+        <Text
+          tag="p"
+          fontSize={16}
+          $gtMd={{
+            fontSize: "$3",
+          }}
+        >
+          © {new Date().getFullYear()} Tamagui with Remix.
+        </Text>
+      </View>
+    </View>
   );
-};
-
-export default function SiteDocument() {
-  const data = unwrap<SiteDocumentPayload | "unregistered">(useLoaderData());
-  if (data === "unregistered") {
-    return <NotRegisteredPage />;
-  }
-  return <DocumentPage {...data} />;
 }
